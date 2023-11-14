@@ -8,6 +8,8 @@
 #define SCREEN_WIDTH 650
 #define SCREEN_HEIGHT 775
 
+int time = 0;
+
 // =====================================================
 // RENDERING FUNCTIONS
 // Disclaimer Title
@@ -131,6 +133,29 @@ void renderDeclineExitBtn(SDL_Renderer * renderer, TTF_Font * font, SDL_Color co
     SDL_RenderCopy(renderer, texture, NULL, &rect);
     SDL_DestroyTexture(texture);
 }
+
+// Gameplay Screen
+// Timer function
+void updateTime() {
+    time = SDL_GetTicks(); 
+}
+// Render timer
+void renderTimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int time) {
+    // Convert time to seconds
+    int seconds = time / 1000;
+
+    // Format the time as a string
+    char timeString[10];
+    sprintf(timeString, "%d sec", seconds);
+
+    // Render the time string
+    SDL_Surface * surface = TTF_RenderText_Solid(font, timeString, color);
+    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
+    
+    SDL_Rect rect = {10, 10, surface->w, surface->h};
+    SDL_FreeSurface(surface);
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
 // =====================================================
 
 // main program 
@@ -157,11 +182,14 @@ int main(int argc, char ** argv) {
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     
     // Initialize variables
-    bool showDisclaimer = true;
+    // bool showDisclaimer = true;
+    bool showDisclaimer = false;
+
     bool displayingMENU = false;
     bool confirmExit = false;
     bool escapePressed = false;
-    bool gameStart = false;
+    // bool gameStart = false;
+    bool gameStart = true;
     int mouseX, mouseY;
 
     while (!quit)
@@ -189,71 +217,73 @@ int main(int argc, char ** argv) {
             }
         }
 
+
         // Set Background color
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // black background
         SDL_RenderClear(renderer);
 
         // Render Disclaimer
-        if (showDisclaimer) {
-            renderDisclaimerTitle(renderer, font, colorRED, "Disclaimer:", 200);
-            renderDisclaimerContent(renderer, font, colorWHITE, "This game serves as a project", 300);
-            renderDisclaimerContent(renderer, font, colorWHITE, "for educational purposes.", 330);
+        // if (showDisclaimer) {
+        //     renderDisclaimerTitle(renderer, font, colorRED, "Disclaimer:", 200);
+        //     renderDisclaimerContent(renderer, font, colorWHITE, "This game serves as a project", 300);
+        //     renderDisclaimerContent(renderer, font, colorWHITE, "for educational purposes.", 330);
 
-            renderDisclaimerContent(renderer, font, colorWHITE, "All assets used in this game", 400);
-            renderDisclaimerContent(renderer, font, colorWHITE, "are not owned by the developer.", 430);
+        //     renderDisclaimerContent(renderer, font, colorWHITE, "All assets used in this game", 400);
+        //     renderDisclaimerContent(renderer, font, colorWHITE, "are not owned by the developer.", 430);
 
-            renderDisclaimerContent(renderer, font, colorWHITE, "Press SPACEBAR to continue", 500);
+        //     renderDisclaimerContent(renderer, font, colorWHITE, "Press SPACEBAR to continue", 500);
 
-            displayingMENU = true;
-        }
+        //     displayingMENU = true;
+        // }
 
         // Render Main Menu Screen
-        if (!showDisclaimer && displayingMENU) {
+        // if (!showDisclaimer && displayingMENU) {
             // Menu title
-            renderMainMenuTitle(renderer, font, colorWHITE, "SPACE", 175);
-            renderMainMenuTitle(renderer, font, colorWHITE, "SHOOTER", 250);
+        //     renderMainMenuTitle(renderer, font, colorWHITE, "SPACE", 175);
+        //     renderMainMenuTitle(renderer, font, colorWHITE, "SHOOTER", 250);
 
-            // Menu buttons
-            // if mouse hover over 'START', it will turn red, or else it will be white
-            if (mouseX >= 275 && mouseX <= 375 && mouseY >= 400 && mouseY <= 450) {
-                renderMainMenuBtn(renderer, font, colorRED, "START", 400);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    printf("Start Button Pressed\n");
-                    gameStart = true;
-                    displayingMENU = false;
-                }
-            } else { 
-                renderMainMenuBtn(renderer, font, colorWHITE, "START", 400);
-            }
-        }
+        //     // Menu buttons
+        //     // if mouse hover over 'START', it will turn red, or else it will be white
+        //     if (mouseX >= 275 && mouseX <= 375 && mouseY >= 400 && mouseY <= 450) {
+        //         renderMainMenuBtn(renderer, font, colorRED, "START", 400);
+        //         if (event.type == SDL_MOUSEBUTTONDOWN) {
+        //             printf("Start Button Pressed\n");
+        //             gameStart = true;
+        //             displayingMENU = false;
+        //         }
+        //     } else { 
+        //         renderMainMenuBtn(renderer, font, colorWHITE, "START", 400);
+        //     }
+        // }
 
         // Render Exit confirmation screen
-        if (confirmExit) {
-            SDL_RenderClear(renderer);
-            renderConfirmExit(renderer, font, colorWHITE, "Are you sure you want to exit?", 350);
-            // if mouse hover over 'YES', it will turn red, or else it will be white
-            if (mouseX >= 275 && mouseX <= 375 && mouseY >= 400 && mouseY <= 450) {
-                renderConfirmExitBtn(renderer, font, colorRED, "YES", 400);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    quit = true;
-                }
-            } else {
-                renderConfirmExitBtn(renderer, font, colorWHITE, "YES", 400);
-            }
-            // if mouse hover over 'NO', it will turn red, or else it will be white
-            if (mouseX >= 275 && mouseX <= 375 && mouseY >= 450 && mouseY <= 500) {
-                renderDeclineExitBtn(renderer, font, colorRED, "NO", 450);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    confirmExit = false;
-                }
-            } else {
-                renderDeclineExitBtn(renderer, font, colorWHITE, "NO", 450);
-            }
-        }
-
-        // if (gameStart) {
-            
+        // if (confirmExit) {
+        //     SDL_RenderClear(renderer);
+        //     renderConfirmExit(renderer, font, colorWHITE, "Are you sure you want to exit?", 350);
+        //     // if mouse hover over 'YES', it will turn red, or else it will be white
+        //     if (mouseX >= 275 && mouseX <= 375 && mouseY >= 400 && mouseY <= 450) {
+        //         renderConfirmExitBtn(renderer, font, colorRED, "YES", 400);
+        //         if (event.type == SDL_MOUSEBUTTONDOWN) {
+        //             quit = true;
+        //         }
+        //     } else {
+        //         renderConfirmExitBtn(renderer, font, colorWHITE, "YES", 400);
+        //     }
+        //     // if mouse hover over 'NO', it will turn red, or else it will be white
+        //     if (mouseX >= 275 && mouseX <= 375 && mouseY >= 450 && mouseY <= 500) {
+        //         renderDeclineExitBtn(renderer, font, colorRED, "NO", 450);
+        //         if (event.type == SDL_MOUSEBUTTONDOWN) {
+        //             confirmExit = false;
+        //         }
+        //     } else {
+        //         renderDeclineExitBtn(renderer, font, colorWHITE, "NO", 450);
+        //     }
         // }
+
+        if (gameStart) {
+            updateTime();
+            renderTimer(renderer, font, colorWHITE, time);
+        }
        
 
         SDL_RenderPresent(renderer);
