@@ -7,6 +7,7 @@
 
 #define SCREEN_WIDTH 650
 #define SCREEN_HEIGHT 775
+#define TICK_INTERVAL (1000 / 60)
 
 int time = 0;
 
@@ -155,8 +156,10 @@ void renderTimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int 
     SDL_Rect rect = {10, 10, surface->w, surface->h};
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
 }
-// =====================================================
+
+
 
 // main program 
 int main(int argc, char ** argv) {
@@ -170,17 +173,33 @@ int main(int argc, char ** argv) {
     TTF_Init();
 
     // Text Related
-
 	TTF_Font *font = TTF_OpenFont("VISITOR.ttf", 25);
 	SDL_Color colorRED = {255, 0, 0};
     SDL_Color colorGREEN = {0, 255, 0};
     SDL_Color colorBLUE = {0, 0, 255};
     SDL_Color colorWHITE = {255, 255, 255};
- 
+
+    // Audio Related
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+    Mix_Music *bgm = Mix_LoadMUS("sounds/Mountain Trials.mp3");
+    Mix_Chunk *hoverSFX = Mix_LoadWAV("sounds/hover.wav");
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 10); // Set volume to 10%
+
     // Window and Renderer
     SDL_Window * window = SDL_CreateWindow("Space Shooter v0.2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     
+    // Load All Sprite
+    SDL_Surface * playerShip = IMG_Load("media/PlayerShipSprite.png");
+
+    // Loac Surface
+    SDL_Texture * playerShipTexture = SDL_CreateTextureFromSurface(renderer, playerShip);
+
+    // Clear Sprite
+    SDL_FreeSurface(playerShip);
+
+    // Mix_PlayMusic(bgm, -1);
+
     // Initialize variables
     // bool showDisclaimer = true;
     bool showDisclaimer = false;
@@ -191,6 +210,16 @@ int main(int argc, char ** argv) {
     // bool gameStart = false;
     bool gameStart = true;
     int mouseX, mouseY;
+    float playerX = 300;
+    float playerY = 700;
+
+    bool left = false;
+    bool right = false;
+    bool up = false;
+    bool down = false;
+
+    float speed = 0.1;
+
 
     while (!quit)
     {
@@ -200,6 +229,7 @@ int main(int argc, char ** argv) {
                 case SDL_QUIT:
                     quit = true;
                     break;
+
                 case SDL_KEYDOWN:
                     // if "esc" button is pressed, display exit confirmation screen
                     if ((event.key.keysym.sym == SDLK_ESCAPE) && displayingMENU) {
@@ -208,13 +238,35 @@ int main(int argc, char ** argv) {
                     if (event.key.keysym.sym == SDLK_SPACE) {
                         showDisclaimer = false;
                     }
-                    break;
+
                 case SDL_MOUSEMOTION:
                     // Get mouse coordinates
                     SDL_GetMouseState(&mouseX, &mouseY);
                     printf("Mouse coordinates: (%d, %d)\n", mouseX, mouseY);
                     break;
             }
+        }
+
+        const Uint8 *state = SDL_GetKeyboardState(NULL);
+        if (state[SDL_SCANCODE_LEFT] && gameStart) {
+            left = true;
+        } else {
+            left = false;
+        }
+        if (state[SDL_SCANCODE_RIGHT] && gameStart) {
+            right = true;
+        } else {
+            right = false;
+        }
+        if (state[SDL_SCANCODE_UP] && gameStart) {
+            up = true;
+        } else {
+            up = false;
+        }
+        if (state[SDL_SCANCODE_DOWN] && gameStart) {
+            down = true;
+        } else {
+            down = false;
         }
 
 
@@ -281,10 +333,45 @@ int main(int argc, char ** argv) {
         // }
 
         if (gameStart) {
+            //display timer
             updateTime();
             renderTimer(renderer, font, colorWHITE, time);
+
+            // Keyboard movement for player ship
+            if (left) {
+                playerX -= speed;
+            }
+            if (right) {
+                playerX += speed;
+            }
+            if (up) {
+                playerY -= speed;
+            }
+            if (down) {
+                playerY += speed;
+            }
+            // Restrict player ship movement within windows
+            if (playerX < 0) {
+                playerX = 0;
+            }
+            if (playerX > SCREEN_WIDTH - 50) {
+                playerX = SCREEN_WIDTH - 50;
+            }
+            if (playerY < 0) {
+                playerY = 0;
+            }
+            if (playerY > SCREEN_HEIGHT - 50) {
+                playerY = SCREEN_HEIGHT - 50;
+            }
+
+            //display player ship
+            SDL_Rect playerShipRect;
+            playerShipRect.x = playerX;
+            playerShipRect.y = playerY;
+            playerShipRect.w = 50;
+            playerShipRect.h = 50;
+            SDL_RenderCopy(renderer, playerShipTexture, NULL, &playerShipRect);
         }
-       
 
         SDL_RenderPresent(renderer);
     }
@@ -297,6 +384,8 @@ int main(int argc, char ** argv) {
 	TTF_Quit();
     
     IMG_Quit();
+    Mix_FreeMusic(bgm);
+    Mix_FreeChunk(hoverSFX);
     Mix_CloseAudio();
     Mix_Quit();
     SDL_Quit();
