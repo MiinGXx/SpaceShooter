@@ -191,12 +191,15 @@ int main(int argc, char ** argv) {
     
     // Load All Sprite
     SDL_Surface * playerShip = IMG_Load("media/PlayerShipSprite.png");
+    SDL_Surface * enemyShip = IMG_Load("media/EnemyShipSprite.png");
 
     // Loac Surface
     SDL_Texture * playerShipTexture = SDL_CreateTextureFromSurface(renderer, playerShip);
+    SDL_Texture * enemyShipTexture = SDL_CreateTextureFromSurface(renderer, enemyShip);
 
     // Clear Sprite
     SDL_FreeSurface(playerShip);
+    SDL_FreeSurface(enemyShip);
 
     // Mix_PlayMusic(bgm, -1);
 
