@@ -261,7 +261,7 @@ int main(int argc, char ** argv) {
     Mix_VolumeChunk(explosionSFX, MIX_MAX_VOLUME / 15); // Set volume to 10%
 
     // Window and Renderer
-    SDL_Window * window = SDL_CreateWindow("Space Shooter v0.2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    SDL_Window * window = SDL_CreateWindow("Space Shooter v0.3", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     
     // Load All Sprite
