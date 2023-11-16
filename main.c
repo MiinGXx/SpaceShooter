@@ -8,7 +8,7 @@
 
 #define SCREEN_WIDTH 650
 #define SCREEN_HEIGHT 775
-#define TICK_INTERVAL (1000 / 60)
+#define TICK_INTERVAL (1)
 
 int time = 0;
 
@@ -306,6 +306,9 @@ int main(int argc, char ** argv) {
 
     float speed = 0.1;
 
+    int frameTime = 5;
+
+
     // Initialize enemy ships
     for (int i = 0; i < maxEnemyShips; ++i) {
         // Generate random x position for enemy ship
@@ -325,6 +328,9 @@ int main(int argc, char ** argv) {
 // Main Loop 
     while (!quit)
     {
+        int frameStartTime = SDL_GetTicks();
+        float adjustedSpeed = speed * (frameTime / TICK_INTERVAL);
+
         // Event Polls
         if(SDL_PollEvent(&event) > 0){
             switch (event.type){
@@ -389,7 +395,7 @@ int main(int argc, char ** argv) {
 
         // Update enemy ship positions
         for (int i = 0; i < maxEnemyShips; ++i) {
-            enemyShips[i].enemyY += enemyShips[i].enemySpeed;
+            enemyShips[i].enemyY += enemyShips[i].enemySpeed * (frameTime / TICK_INTERVAL);
 
             // Reset enemy ship position if it goes off screen
             if (enemyShips[i].enemyY > SCREEN_HEIGHT) {
@@ -409,7 +415,7 @@ int main(int argc, char ** argv) {
         // Update player projectiles
         for (int i = 0; i < maxPlayerProjectiles; ++i) {
             if (playerProjectiles[i].playerProjectileActive) {
-                playerProjectiles[i].playerProjectileY -= playerProjectiles[i].playerProjectileSpeed;
+                playerProjectiles[i].playerProjectileY -= playerProjectiles[i].playerProjectileSpeed * (frameTime / TICK_INTERVAL);
 
                 // Reset player projectile position if it goes off screen
                 if (playerProjectiles[i].playerProjectileY < 0) {
@@ -500,18 +506,20 @@ int main(int argc, char ** argv) {
             updateTime();
             renderTimer(renderer, font, colorWHITE, time);
 
+            int frameStartTime = SDL_GetTicks();
+
             // Keyboard movement for player ship
             if (left) {
-                playerX -= speed;
+                playerX -= adjustedSpeed;
             }
             if (right) {
-                playerX += speed;
+                playerX += adjustedSpeed;
             }
             if (up) {
-                playerY -= speed;
+                playerY -= adjustedSpeed;
             }
             if (down) {
-                playerY += speed;
+                playerY += adjustedSpeed;
             }
             // Restrict player ship movement within windows
             if (playerX < 0) {
@@ -552,10 +560,16 @@ int main(int argc, char ** argv) {
                     SDL_RenderCopy(renderer, playerProjectileTexture, NULL, &playerProjectileRect);
                 }
             }
-            
         }
 
         SDL_RenderPresent(renderer);
+
+        int frameTime = SDL_GetTicks() - frameStartTime;
+
+        // Limit framerate to 60 FPS
+        if (frameTime < TICK_INTERVAL) {
+            SDL_Delay(TICK_INTERVAL - frameTime);
+        }
     }
 
 
