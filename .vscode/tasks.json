@@ -7,6 +7,8 @@
 			"args": [
 				"-g",
 				"main.c",
+				"rendering.c",
+				"gameplay.c",
 				"-o",
 				"SpaceShooter.exe",
 				"-IC:\\msys64\\mingw32\\include",

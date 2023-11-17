@@ -6,6 +6,9 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "rendering.h"
+#include "gameplay.h"
+
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 700
 #define TICK_INTERVAL (1)
@@ -32,189 +35,8 @@ PlayerProjectile playerProjectiles[maxPlayerProjectiles];
 #define PROJECTILE_COOLDOWN 500  // 500 milliseconds between each projectile
 
 // =====================================================
-// RENDERING FUNCTIONS
-// Disclaimer Title
-void renderDisclaimerTitle(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 300) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 300;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// Disclaimer Content
-void renderDisclaimerContent(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 400) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 400;
-    rect.h = 30;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// Main Menu Content
-// Main Menu Title
-void renderMainMenuTitle(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 400) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 400;
-    rect.h = 100;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// Main Menu Buttons
-void renderMainMenuBtn(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 100) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 100;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-
-// confirmExit 
-void renderConfirmExitTitle(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 400) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 400;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-void renderConfirmExit(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 400) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 400;
-    rect.h = 30;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// confirmExitbtn
-void renderConfirmExitBtn(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 100) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 100;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// declineExitBtn
-void renderDeclineExitBtn(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 100) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 100;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-
-// Gameplay Screen
-// Timer function
-void updateTime(int time) {
-    time = SDL_GetTicks(); 
-}
-// Render timer
-void renderTimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int time) {
-    // Convert time to seconds
-    int seconds = time / 1000;
-
-    // Format the time as a string
-    char timeString[10];
-    sprintf(timeString, "%d sec", seconds);
-
-    // Render the time string
-    SDL_Surface * surface = TTF_RenderText_Solid(font, timeString, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect = {10, 10, surface->w, surface->h};
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// Check collision between two rectangles (for enenmy ship and player ship)
-bool checkCollision(SDL_Rect a, SDL_Rect b) {
-    // The sides of the rectangles
-    int leftA, leftB;
-    int rightA, rightB;
-    int topA, topB;
-    int bottomA, bottomB;
-
-    // Calculate the sides of rect A
-    leftA = a.x;
-    rightA = a.x + a.w;
-    topA = a.y;
-    bottomA = a.y + a.h;
-
-    // Calculate the sides of rect B
-    leftB = b.x;
-    rightB = b.x + b.w;
-    topB = b.y;
-    bottomB = b.y + b.h;
-
-    // If any of the sides from A are outside of B
-    if (bottomA <= topB) {
-        return false;
-    }
-    if (topA >= bottomB) {
-        return false;
-    }
-    if (rightA <= leftB) {
-        return false;
-    }
-    if (leftA >= rightB) {
-        return false;
-    }
-    // If none of the sides from A are outside B
-    return true;
-}
-// render playerProjectile
+// GAMEPLAY FUNCTIONS
+// assign playerProjectile coordinates
 void shootPlayerProjectile (int X, int Y) {
     for (int i = 0; i < maxPlayerProjectiles; ++i) {
         if (!playerProjectiles[i].playerProjectileActive) {
@@ -226,143 +48,8 @@ void shootPlayerProjectile (int X, int Y) {
         }
     }
 }
-// render player lives
-void renderPlayerLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int lives) {
-    // Format the lives as a string
-    char livesString[10];
-    sprintf(livesString, "Lives: %d", lives);
-
-    // Render the lives string
-    SDL_Surface * surface = TTF_RenderText_Solid(font, livesString, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect = {10, 50, surface->w, surface->h};
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// render base lives
-void renderBaseLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int lives) {
-    // Format the lives as a string
-    char livesString[10];
-    sprintf(livesString, "Base: %d HP", lives);
-
-    // Render the lives string
-    SDL_Surface * surface = TTF_RenderText_Solid(font, livesString, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect = {10, 75, surface->w, surface->h};
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-
-// Game Over Screen
-// render game over title
-void renderGameOverTitle(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 400) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 400;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// render game over content
-void renderGameOverContent(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y, int w) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - w) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = w;
-    rect.h = 30;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// render time survived
-void renderTimeSurvived(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int time, int y) {
-    // Convert time to seconds
-    int seconds = time / 1000;
-
-    // Format the time as a string
-    char timeString[10];
-    sprintf(timeString, "%d sec", seconds);
-
-    // Render the time string
-    SDL_Surface * surface = TTF_RenderText_Solid(font, timeString, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 100) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 100;
-    rect.h = 30;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-//render enemy ship destroyed count
-void renderEnemyShipDestroyed(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int enemyShipDestroyed, int y) {
-    // Format the enemy ship destroyed as a string
-    char enemyShipDestroyedString[10];
-    sprintf(enemyShipDestroyedString, "a total of %d", enemyShipDestroyed);
-
-    // Render the enemy ship destroyed string
-    SDL_Surface * surface = TTF_RenderText_Solid(font, enemyShipDestroyedString, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-    
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 300) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 300;
-    rect.h = 30;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// render game over buttons
-// render retry button
-void renderRetryBtn(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 100) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 100;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
-// render exit button
-void renderExitBtn(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    SDL_Rect rect;
-    int centerX = (SCREEN_WIDTH - 100) / 2;
-    rect.x = centerX;
-    rect.y = y;
-    rect.w = 100;
-    rect.h = 50;
-    SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_DestroyTexture(texture);
-}
 // =====================================================
+// RENDERING FUNCTIONS
 // Rendering Full Disclaimer
 void renderDisclaimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color colorRED, SDL_Color colorWHITE) {
     renderDisclaimerTitle(renderer, font, colorRED, "Disclaimer:", 200);
@@ -455,7 +142,7 @@ int main(int argc, char ** argv) {
     Mix_VolumeChunk(explosionSFX, MIX_MAX_VOLUME / 15); // Set volume to 10%
 
     // Window and Renderer
-    SDL_Window * window = SDL_CreateWindow("Space Shooter v0.3", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    SDL_Window * window = SDL_CreateWindow("Space Shooter v0.4", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     
     // Load All Sprite
@@ -599,6 +286,7 @@ int main(int argc, char ** argv) {
         // Render Main Menu Screen
         if (!showDisclaimer && displayingMENU) {
             renderMenu(renderer, font, colorWHITE, colorRED, mouseX, mouseY, event, &gameStart, &displayingMENU);
+            startTime = SDL_GetTicks();
         }
 
         // Render Exit confirmation screen
