@@ -1,9 +1,11 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdbool.h>
 
 void updateTime(int time);

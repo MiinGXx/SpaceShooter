@@ -2,13 +2,15 @@
     "tasks": [
 		{
 			"type": "shell",
-			"label": "music",
+			"label": "game",
 			"command": "gcc",
 			"args": [
 				"-g",
 				"main.c",
 				"rendering.c",
 				"gameplay.c",
+				"statistics.c",
+				"gui.c",
 				"-o",
 				"SpaceShooter.exe",
 				"-IC:\\msys64\\mingw32\\include",

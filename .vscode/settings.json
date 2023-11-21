@@ -2,6 +2,10 @@
     "files.associations": {
         "sdl.h": "c",
         "sdl_image.h": "c",
-        "sdl_mixer.h": "c"
-    }
+        "sdl_mixer.h": "c",
+        "iostream": "cpp",
+        "string": "cpp",
+        "sdl_ttf.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

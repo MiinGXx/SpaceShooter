@@ -8,6 +8,8 @@
 
 #include "rendering.h"
 #include "gameplay.h"
+#include "statistics.h"
+#include "gui.h"
 
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 700
@@ -49,69 +51,6 @@ void shootPlayerProjectile (int X, int Y) {
     }
 }
 // =====================================================
-// RENDERING FUNCTIONS
-// Rendering Full Disclaimer
-void renderDisclaimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color colorRED, SDL_Color colorWHITE) {
-    renderDisclaimerTitle(renderer, font, colorRED, "Disclaimer:", 200);
-    renderDisclaimerContent(renderer, font, colorWHITE, "This game serves as a project", 300);
-    renderDisclaimerContent(renderer, font, colorWHITE, "for educational purposes.", 330);
-    renderDisclaimerContent(renderer, font, colorWHITE, "All assets used in this game", 400);
-    renderDisclaimerContent(renderer, font, colorWHITE, "are not owned by the developer.", 430);
-    renderDisclaimerContent(renderer, font, colorWHITE, "Press SPACEBAR to continue", 500);
-}
-// Rendering Full Menu
-void renderMenu(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, SDL_Color colorRED, int mouseX, int mouseY, SDL_Event event, bool* gameStart, bool* displayingMENU) {
-    // render Menu title
-    renderMainMenuTitle(renderer, font, colorWHITE, "SPACE", 175);
-    renderMainMenuTitle(renderer, font, colorWHITE, "SHOOTER", 250);
-    // Menu buttons
-    // if mouse hover over 'START', it will turn red, or else it will be white
-    if (mouseX >= 275 && mouseX <= 375 && mouseY >= 400 && mouseY <= 450) {
-        renderMainMenuBtn(renderer, font, colorRED, "START", 400);
-        if (event.type == SDL_MOUSEBUTTONDOWN) {
-            printf("Start Button Pressed\n");
-            *gameStart = true;
-            *displayingMENU = false;
-        }
-    } else { 
-        renderMainMenuBtn(renderer, font, colorWHITE, "START", 400);
-    }
-}
-// Rendering Full Exit Confirmation
-void renderExitConfirmation(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, SDL_Color colorRED, int mouseX, int mouseY, SDL_Event event, bool* quit, bool* confirmExit) {
-    SDL_RenderClear(renderer);
-    renderConfirmExit(renderer, font, colorWHITE, "Are you sure you want to exit?", 350);
-    // if mouse hover over 'YES', it will turn red, or else it will be white
-    if (mouseX >= 275 && mouseX <= 375 && mouseY >= 400 && mouseY <= 450) {
-        renderConfirmExitBtn(renderer, font, colorRED, "YES", 400);
-        if (event.type == SDL_MOUSEBUTTONDOWN) {
-            *quit = true;
-        }
-    } else {
-        renderConfirmExitBtn(renderer, font, colorWHITE, "YES", 400);
-    }
-    // if mouse hover over 'NO', it will turn red, or else it will be white
-    if (mouseX >= 275 && mouseX <= 375 && mouseY >= 450 && mouseY <= 500) {
-        renderDeclineExitBtn(renderer, font, colorRED, "NO", 450);
-        if (event.type == SDL_MOUSEBUTTONDOWN) {
-            *confirmExit = false;
-        }
-    } else {
-        renderDeclineExitBtn(renderer, font, colorWHITE, "NO", 450);
-    }
-}
-// Rendering Full Game Over Screen
-void renderGameOverScreen(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, SDL_Color colorRED, int time, int enemyShipDestroyed) {
-    // Render Game Over title
-    renderGameOverTitle(renderer, font, colorRED, "GAME OVER", 200);
-    // Render Game Over content
-    renderGameOverContent(renderer, font, colorWHITE, "You have survived for", 250, 350);
-    renderTimeSurvived(renderer, font, colorWHITE, time, 275);
-    renderGameOverContent(renderer, font, colorWHITE, "You have destroyed", 325, 330);
-    renderEnemyShipDestroyed(renderer, font, colorWHITE, enemyShipDestroyed, 350);
-    renderGameOverContent(renderer, font, colorWHITE, "enemy ships", 375, 250);
-}
-// =====================================================
 // main program 
 int main(int argc, char ** argv) {
     bool quit = false;
@@ -133,16 +72,14 @@ int main(int argc, char ** argv) {
     // Audio Related
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_Music *bgm = Mix_LoadMUS("sounds/Mountain Trials.mp3");
-    Mix_Chunk *hoverSFX = Mix_LoadWAV("sounds/hoverSFX.wav");
     Mix_Chunk *pewSFX = Mix_LoadWAV("sounds/pewSFX.wav");
     Mix_Chunk *explosionSFX = Mix_LoadWAV("sounds/boomSFX.wav");
     Mix_VolumeMusic(MIX_MAX_VOLUME / 10); // Set volume to 10%
-    Mix_VolumeChunk(hoverSFX, MIX_MAX_VOLUME / 10); // Set volume to 10%
     Mix_VolumeChunk(pewSFX, MIX_MAX_VOLUME / 15); // Set volume to 10%
     Mix_VolumeChunk(explosionSFX, MIX_MAX_VOLUME / 15); // Set volume to 10%
 
     // Window and Renderer
-    SDL_Window * window = SDL_CreateWindow("Space Shooter v0.4", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    SDL_Window * window = SDL_CreateWindow("Space Shooter v0.6", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     
     // Load All Sprite
@@ -163,6 +100,9 @@ int main(int argc, char ** argv) {
     // Initialize variables
     bool showDisclaimer = true;
     bool displayingMENU = false;
+    bool displayingSCOREBOARD = false;
+    bool ScoreboardTIME = true;
+    bool ScoreboardTOP = false;
     bool confirmExit = false;
     bool escapePressed = false;
     bool gameStart = false;
@@ -192,6 +132,9 @@ int main(int argc, char ** argv) {
 
     int time = 0;
     Uint32 startTime = 0;
+
+    int currentPage = 1;
+    int lineNumber;
 
 
     // Initialize enemy ships
@@ -239,7 +182,7 @@ int main(int argc, char ** argv) {
             }
         }
 
-        static bool spacePressedPrevFrame = false;
+        bool spacePressedPrevFrame = false;
         // Keyboard input for player ship movement
         const Uint8 *state = SDL_GetKeyboardState(NULL);
         if (state[SDL_SCANCODE_LEFT] && gameStart) {
@@ -285,13 +228,95 @@ int main(int argc, char ** argv) {
 
         // Render Main Menu Screen
         if (!showDisclaimer && displayingMENU) {
-            renderMenu(renderer, font, colorWHITE, colorRED, mouseX, mouseY, event, &gameStart, &displayingMENU);
+            renderMenu(renderer, font, colorWHITE, colorRED, mouseX, mouseY, event, &gameStart, &displayingMENU, &displayingSCOREBOARD);
             startTime = SDL_GetTicks();
         }
 
         // Render Exit confirmation screen
         if (confirmExit) {
             renderExitConfirmation(renderer, font, colorWHITE, colorRED, mouseX, mouseY, event, &quit, &confirmExit);
+        }
+
+        // Render Scoreboard screen
+        if (displayingSCOREBOARD) {
+            int totalLines = checkNumberOfLines();
+            int totalPages = totalLines / 10;
+
+            if (ScoreboardTOP) {
+                renderTopScoreboard(renderer, font, colorWHITE, currentPage, totalPages);
+            } else if (ScoreboardTIME) {
+                renderTimeScoreboard(renderer, font, colorWHITE, currentPage, totalPages);
+            }
+            
+
+            // Handle Button Clicks
+            // Back Button
+            if (mouseX >= 225 && mouseX <= 375 && mouseY >= 625 && mouseY <= 675) {
+                renderBackBtn(renderer, font, colorRED, "BACK", 625);
+                if (event.type == SDL_MOUSEBUTTONDOWN) {
+                    printf("Back Button Pressed\n");
+                    displayingSCOREBOARD = false;
+                    displayingMENU = true;
+                }
+            } else {
+                renderBackBtn(renderer, font, colorWHITE, "BACK", 625);
+            }
+
+            // Left Button
+            if (currentPage > 1 && mouseX >= 10 && mouseX <= 60 && mouseY >= 625 && mouseY <= 675) {
+                renderLeftBtn(renderer, font, colorRED, 625);
+                if (event.type == SDL_MOUSEBUTTONDOWN) {
+                    printf("Left Button Pressed\n");
+                    currentPage--;
+                }
+            } else if (currentPage > 1) {
+                renderLeftBtn(renderer, font, colorWHITE, 625);
+            }
+
+            // Right Button
+            if (lineNumber > currentPage * 20 && mouseX >= 530 && mouseX <= 580 && mouseY >= 625 && mouseY <= 675) {
+                renderRightBtn(renderer, font, colorRED, 625);
+                if (event.type == SDL_MOUSEBUTTONDOWN) {
+                    printf("Right Button Pressed\n");
+                    currentPage++;
+                }
+            } else if (lineNumber > currentPage * 20) {
+                renderRightBtn(renderer, font, colorWHITE, 625);
+            }
+
+            // Filter Scorebaord based on history
+            if (mouseX >= 475 && mouseX <= 550 && mouseY >= 25 && mouseY <= 45) {
+                renderHistoryBtn(renderer, font, colorRED, 25);
+                if (event.type == SDL_MOUSEBUTTONDOWN) {
+                    printf("History Button Pressed\n");
+                    if (ScoreboardTIME) {
+                        ScoreboardTIME = false;
+                        ScoreboardTOP = true;
+                    } else if (ScoreboardTOP) {
+                        ScoreboardTOP = false;
+                        ScoreboardTIME = true;
+                    }
+                }
+            } else {
+                renderHistoryBtn(renderer, font, colorWHITE, 25);
+            }
+
+            // Filter Scoreboard based on top score
+            if (mouseX >= 475 && mouseX <= 550 && mouseY >= 50 && mouseY <= 70) {
+                renderTopBtn(renderer, font, colorRED, 50);
+                if (event.type == SDL_MOUSEBUTTONDOWN) {
+                    printf("Top Button Pressed\n");
+                    if (ScoreboardTIME) {
+                        ScoreboardTIME = false;
+                        ScoreboardTOP = true;
+                    } else if (ScoreboardTOP) {
+                        ScoreboardTOP = false;
+                        ScoreboardTIME = true;
+                    }
+                }
+            } else {
+                renderTopBtn(renderer, font, colorWHITE, 50);
+            }
         }
 
         if (gameStart) {
@@ -377,7 +402,7 @@ int main(int argc, char ** argv) {
                     Mix_PlayChannel(-1, explosionSFX, 0);
                     // Reset enemy ship position
                     enemyShips[i].enemyX = rand() % (SCREEN_WIDTH - 50);  // Spawn at random x position
-                    enemyShips[i].enemyY = 0;  // Spawn at top of screen
+                    enemyShips[i].enemyY = -50;  // Spawn at top of screen
                     
                     // Decrease player lives
                     baseLives--;
@@ -389,6 +414,8 @@ int main(int argc, char ** argv) {
                         printf("Game Over\n");
                         gameOver = true;  // Set game over to true (Display Game Over screen)
                         gameStart = false;  // Set game start to false (Stop rendering game screen)
+                        // Record game statistics
+                        recordGameStatistics(time, enemyShipDestroyed, calculateScore(time, enemyShipDestroyed));
                     }
                 }
 
@@ -400,7 +427,7 @@ int main(int argc, char ** argv) {
                     playerLives--;
                     // Reset enemy ship position
                     enemyShips[i].enemyX = rand() % (SCREEN_WIDTH - 50);  // Spawn at random x position
-                    enemyShips[i].enemyY = 0;  // Spawn at top of screen
+                    enemyShips[i].enemyY = -50;  // Spawn at top of screen
 
                     printf("Player lives: %d\n", playerLives);
                     
@@ -410,6 +437,8 @@ int main(int argc, char ** argv) {
                         printf("Game Over\n");
                         gameOver = true;  // Set game over to true (Display Game Over screen)
                         gameStart = false;  // Set game start to false (Stop rendering game screen)
+                        // Record game statistics
+                        recordGameStatistics(time, enemyShipDestroyed, calculateScore(time, enemyShipDestroyed));
                     }
                 }
             }
@@ -435,7 +464,7 @@ int main(int argc, char ** argv) {
 
                             // Reset enemy ship position
                             enemyShips[j].enemyX = rand() % (SCREEN_WIDTH - 50);  // Spawn at random x position
-                            enemyShips[j].enemyY = 0;  // Spawn at top of screen
+                            enemyShips[j].enemyY = -50;  // Spawn at top of screen
                             playerProjectiles[i].playerProjectileActive = false;
                         }
                     }
@@ -452,7 +481,7 @@ int main(int argc, char ** argv) {
             Mix_HaltMusic();
 
             // Render Game Over screen
-            renderGameOverScreen(renderer, font, colorWHITE, colorRED, time, enemyShipDestroyed);
+            renderGameOverScreen(renderer, font, colorWHITE, colorRED, time, enemyShipDestroyed, calculateScore(time, enemyShipDestroyed));
             // Render Buttons
             // if mouse hover over 'RETRY', it will turn red, or else it will be white
             if (mouseX >= 275 && mouseX <= 375 && mouseY >= 450 && mouseY <= 500) {
@@ -545,7 +574,6 @@ int main(int argc, char ** argv) {
     
     IMG_Quit();
     Mix_FreeMusic(bgm);
-    Mix_FreeChunk(hoverSFX);
     Mix_FreeChunk(pewSFX);
     Mix_FreeChunk(explosionSFX);
     Mix_CloseAudio();
