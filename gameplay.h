@@ -13,5 +13,6 @@ void renderTimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int 
 bool checkCollision(SDL_Rect a, SDL_Rect b);
 void renderPlayerLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int lives);
 void renderBaseLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int lives);
+void handlePlayerMovement(bool left, bool right, bool up, bool down, float* playerX, float* playerY, float adjustedSpeed);
 
 #endif 

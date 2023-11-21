@@ -4,6 +4,8 @@
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 700
 
+#include "rendering.h"
+
 // Disclaimer Title
 void renderDisclaimerTitle(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, char * text, int y) {
     SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);

@@ -7,6 +7,9 @@
 #define SCREEN_HEIGHT 700
 #define TICK_INTERVAL (1)
 
+#include "gameplay.h"
+#include "rendering.h"
+
 // Timer function
 void updateTime(int time) {
     time = SDL_GetTicks(); 
@@ -98,5 +101,34 @@ void renderBaseLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, 
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, texture, NULL, &rect);
     SDL_DestroyTexture(texture);
+}
+
+void handlePlayerMovement(bool left, bool right, bool up, bool down, float* playerX, float* playerY, float adjustedSpeed) {
+    // Keyboard movement for player ship
+    if (left) {
+        *playerX -= adjustedSpeed;
+    }
+    if (right) {
+        *playerX += adjustedSpeed;
+    }
+    if (up) {
+        *playerY -= adjustedSpeed;
+    }
+    if (down) {
+        *playerY += adjustedSpeed;
+    }
+    // Restrict player ship movement within windows
+    if (*playerX < 0) {
+        *playerX = 0;
+    }
+    if (*playerX > SCREEN_WIDTH - 50) {
+        *playerX = SCREEN_WIDTH - 50;
+    }
+    if (*playerY < 0) {
+        *playerY = 0;
+    }
+    if (*playerY > SCREEN_HEIGHT - 50) {
+        *playerY = SCREEN_HEIGHT - 50;
+    }
 }
 

@@ -171,3 +171,64 @@ void renderGameOverScreen(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colo
     renderEnemyShipDestroyed(renderer, font, colorWHITE, enemyShipDestroyed, 370);
     renderGameOverContent(renderer, font, colorWHITE, "enemy ships", 390, 250);
 }
+
+// button handler for scoreboard
+void handleButtonClicks(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorRED, SDL_Color colorWHITE, int mouseX, int mouseY, SDL_Event event, int* currentPage, bool* displayingSCOREBOARD, bool* displayingMENU, bool* ScoreboardTIME, bool* ScoreboardTOP, int* lineNumber) {
+    // Back Button
+    if (mouseX >= 225 && mouseX <= 375 && mouseY >= 625 && mouseY <= 675) {
+        renderBackBtn(renderer, font, colorRED, "BACK", 625);
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            printf("Back Button Pressed\n");
+            *displayingSCOREBOARD = false;
+            *displayingMENU = true;
+        }
+    } else {
+        renderBackBtn(renderer, font, colorWHITE, "BACK", 625);
+    }
+
+    // Left Button
+    if (*currentPage > 1 && mouseX >= 10 && mouseX <= 60 && mouseY >= 625 && mouseY <= 675) {
+        renderLeftBtn(renderer, font, colorRED, 625);
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            printf("Left Button Pressed\n");
+            (*currentPage)--;
+        }
+    } else if (*currentPage > 1) {
+        renderLeftBtn(renderer, font, colorWHITE, 625);
+    }
+
+    // Right Button
+    if (*lineNumber > *currentPage * 20 && mouseX >= 530 && mouseX <= 580 && mouseY >= 625 && mouseY <= 675) {
+        renderRightBtn(renderer, font, colorRED, 625);
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            printf("Right Button Pressed\n");
+            (*currentPage)++;
+        }
+    } else if (*lineNumber > *currentPage * 20) {
+        renderRightBtn(renderer, font, colorWHITE, 625);
+    }
+
+    // Filter Scoreboard based on history
+    if (mouseX >= 475 && mouseX <= 550 && mouseY >= 25 && mouseY <= 45) {
+        renderHistoryBtn(renderer, font, colorRED, 25);
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            printf("History Button Pressed\n");
+            *ScoreboardTIME = true;
+            *ScoreboardTOP = false;
+        }
+    } else {
+        renderHistoryBtn(renderer, font, colorWHITE, 25);
+    }
+
+    // Filter Scoreboard based on top score
+    if (mouseX >= 475 && mouseX <= 550 && mouseY >= 50 && mouseY <= 70) {
+        renderTopBtn(renderer, font, colorRED, 50);
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            printf("Top Button Pressed\n");
+            *ScoreboardTIME = false;
+            *ScoreboardTOP = true;
+        }
+    } else {
+        renderTopBtn(renderer, font, colorWHITE, 50);
+    }
+}

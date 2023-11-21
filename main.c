@@ -248,75 +248,8 @@ int main(int argc, char ** argv) {
                 renderTimeScoreboard(renderer, font, colorWHITE, currentPage, totalPages);
             }
             
-
             // Handle Button Clicks
-            // Back Button
-            if (mouseX >= 225 && mouseX <= 375 && mouseY >= 625 && mouseY <= 675) {
-                renderBackBtn(renderer, font, colorRED, "BACK", 625);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    printf("Back Button Pressed\n");
-                    displayingSCOREBOARD = false;
-                    displayingMENU = true;
-                }
-            } else {
-                renderBackBtn(renderer, font, colorWHITE, "BACK", 625);
-            }
-
-            // Left Button
-            if (currentPage > 1 && mouseX >= 10 && mouseX <= 60 && mouseY >= 625 && mouseY <= 675) {
-                renderLeftBtn(renderer, font, colorRED, 625);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    printf("Left Button Pressed\n");
-                    currentPage--;
-                }
-            } else if (currentPage > 1) {
-                renderLeftBtn(renderer, font, colorWHITE, 625);
-            }
-
-            // Right Button
-            if (lineNumber > currentPage * 20 && mouseX >= 530 && mouseX <= 580 && mouseY >= 625 && mouseY <= 675) {
-                renderRightBtn(renderer, font, colorRED, 625);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    printf("Right Button Pressed\n");
-                    currentPage++;
-                }
-            } else if (lineNumber > currentPage * 20) {
-                renderRightBtn(renderer, font, colorWHITE, 625);
-            }
-
-            // Filter Scorebaord based on history
-            if (mouseX >= 475 && mouseX <= 550 && mouseY >= 25 && mouseY <= 45) {
-                renderHistoryBtn(renderer, font, colorRED, 25);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    printf("History Button Pressed\n");
-                    if (ScoreboardTIME) {
-                        ScoreboardTIME = false;
-                        ScoreboardTOP = true;
-                    } else if (ScoreboardTOP) {
-                        ScoreboardTOP = false;
-                        ScoreboardTIME = true;
-                    }
-                }
-            } else {
-                renderHistoryBtn(renderer, font, colorWHITE, 25);
-            }
-
-            // Filter Scoreboard based on top score
-            if (mouseX >= 475 && mouseX <= 550 && mouseY >= 50 && mouseY <= 70) {
-                renderTopBtn(renderer, font, colorRED, 50);
-                if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    printf("Top Button Pressed\n");
-                    if (ScoreboardTIME) {
-                        ScoreboardTIME = false;
-                        ScoreboardTOP = true;
-                    } else if (ScoreboardTOP) {
-                        ScoreboardTOP = false;
-                        ScoreboardTIME = true;
-                    }
-                }
-            } else {
-                renderTopBtn(renderer, font, colorWHITE, 50);
-            }
+           handleButtonClicks(renderer, font, colorRED, colorWHITE, mouseX, mouseY, event, &currentPage, &displayingSCOREBOARD, &displayingMENU, &ScoreboardTIME, &ScoreboardTOP, &lineNumber);
         }
 
         if (gameStart) {
@@ -340,31 +273,7 @@ int main(int argc, char ** argv) {
             renderBaseLives(renderer, font, colorWHITE, baseLives);
 
             // Keyboard movement for player ship
-            if (left) {
-                playerX -= adjustedSpeed;
-            }
-            if (right) {
-                playerX += adjustedSpeed;
-            }
-            if (up) {
-                playerY -= adjustedSpeed;
-            }
-            if (down) {
-                playerY += adjustedSpeed;
-            }
-            // Restrict player ship movement within windows
-            if (playerX < 0) {
-                playerX = 0;
-            }
-            if (playerX > SCREEN_WIDTH - 50) {
-                playerX = SCREEN_WIDTH - 50;
-            }
-            if (playerY < 0) {
-                playerY = 0;
-            }
-            if (playerY > SCREEN_HEIGHT - 50) {
-                playerY = SCREEN_HEIGHT - 50;
-            }
+            handlePlayerMovement(left, right, up, down, &playerX, &playerY, adjustedSpeed);
 
             //display enemy ships
             for (int i = 0; i < maxEnemyShips; ++i) {
