@@ -30,3 +30,5 @@
 30. Time Survived: 27 Sec, Enemy Ships Destroyed: 30, Score: 9000
 31. Time Survived: 36 Sec, Enemy Ships Destroyed: 38, Score: 5060
 32. Time Survived: 59 Sec, Enemy Ships Destroyed: 67, Score: 8765
+33. Time Survived: 30 Sec, Enemy Ships Destroyed: 30, Score: 4050
+34. Time Survived: 31 Sec, Enemy Ships Destroyed: 28, Score: 3885

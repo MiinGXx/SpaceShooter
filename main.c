@@ -81,7 +81,9 @@ int main(int argc, char ** argv) {
     // Window and Renderer
     SDL_Window * window = SDL_CreateWindow("Space Shooter v0.6", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
-    
+    SDL_Surface *icon = IMG_Load("media/PLayerShipSprite.png");
+    SDL_SetWindowIcon(window, icon);
+
     // Load All Sprite
     SDL_Surface * playerShip = IMG_Load("media/PlayerShipSprite.png");
     SDL_Surface * enemyShip = IMG_Load("media/AlienShipSprite.png");
@@ -96,6 +98,7 @@ int main(int argc, char ** argv) {
     SDL_FreeSurface(playerShip);
     SDL_FreeSurface(enemyShip);
     SDL_FreeSurface(playerProjectile);
+    SDL_FreeSurface(icon);
 
     // Initialize variables
     bool showDisclaimer = true;
@@ -256,7 +259,7 @@ int main(int argc, char ** argv) {
             // Play ingame bgm
             if (!ingameMusic) {
                 startTime = SDL_GetTicks();
-                // Mix_PlayMusic(bgm, -1);
+                Mix_PlayMusic(bgm, -1);
                 ingameMusic = true;
             }
 
