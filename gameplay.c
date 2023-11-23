@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
+
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 700
 #define TICK_INTERVAL (1)
@@ -10,12 +11,14 @@
 #include "gameplay.h"
 #include "rendering.h"
 
-// Timer function
+
+// Updates the time variable with the current system time.
+// time The time variable to be updated.
 void updateTime(int time) {
     time = SDL_GetTicks(); 
 }
 
-// Render timer
+// Renders the player ship on the screen. 
 void renderTimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int time) {
     // Convert time to seconds
     int seconds = time / 1000;
@@ -34,7 +37,7 @@ void renderTimer(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int 
     SDL_DestroyTexture(texture);
 }
 
-// Check collision between two rectangles (for enenmy ship and player ship)
+// Checks collision between two objects.
 bool checkCollision(SDL_Rect a, SDL_Rect b) {
     // The sides of the rectangles
     int leftA, leftB;
@@ -71,7 +74,7 @@ bool checkCollision(SDL_Rect a, SDL_Rect b) {
     return true;
 }
 
-// render player lives
+// Renders the player ship lives on the screen.
 void renderPlayerLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int lives) {
     // Format the lives as a string
     char livesString[10];
@@ -87,7 +90,7 @@ void renderPlayerLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color
     SDL_DestroyTexture(texture);
 }
 
-// render base lives
+// Renders the base lives on the screen.
 void renderBaseLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, int lives) {
     // Format the lives as a string
     char livesString[10];
@@ -103,6 +106,7 @@ void renderBaseLives(SDL_Renderer * renderer, TTF_Font * font, SDL_Color color, 
     SDL_DestroyTexture(texture);
 }
 
+// Handles the player ship movement.
 void handlePlayerMovement(bool left, bool right, bool up, bool down, float* playerX, float* playerY, float adjustedSpeed) {
     // Keyboard movement for player ship
     if (left) {
@@ -131,4 +135,3 @@ void handlePlayerMovement(bool left, bool right, bool up, bool down, float* play
         *playerY = SCREEN_HEIGHT - 50;
     }
 }
-

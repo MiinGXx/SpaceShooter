@@ -5,7 +5,8 @@
         "sdl_mixer.h": "c",
         "iostream": "cpp",
         "string": "cpp",
-        "sdl_ttf.h": "c"
+        "sdl_ttf.h": "c",
+        "stdbool.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

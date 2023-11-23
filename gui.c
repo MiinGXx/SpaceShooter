@@ -123,6 +123,7 @@ void renderTimeScoreboard(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colo
     char buffer[256];
     int lineNumber = 0;
 
+    // Read file line by line and render each lines
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         if (lineNumber >= (currentPage - 1) * linesPerPage && lineNumber < currentPage * linesPerPage) {
             // Remove newline character
@@ -138,24 +139,24 @@ void renderTimeScoreboard(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colo
 // display full exit confirmation gui
 void renderExitConfirmation(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, SDL_Color colorRED, int mouseX, int mouseY, SDL_Event event, bool* quit, bool* confirmExit) {
     SDL_RenderClear(renderer);
-    renderConfirmExit(renderer, font, colorWHITE, "Are you sure you want to exit?", 350);
+    renderConfirmExit(renderer, font, colorWHITE, "Are you sure you want to exit?", 200);
     // if mouse hover over 'YES', it will turn red, or else it will be white
-    if (mouseX >= 275 && mouseX <= 375 && mouseY >= 400 && mouseY <= 450) {
-        renderConfirmExitBtn(renderer, font, colorRED, "YES", 400);
+    if (mouseX >= 275 && mouseX <= 375 && mouseY >= 300 && mouseY <= 350) {
+        renderConfirmExitBtn(renderer, font, colorRED, "YES", 300);
         if (event.type == SDL_MOUSEBUTTONDOWN) {
             *quit = true;
         }
     } else {
-        renderConfirmExitBtn(renderer, font, colorWHITE, "YES", 400);
+        renderConfirmExitBtn(renderer, font, colorWHITE, "YES", 300);
     }
     // if mouse hover over 'NO', it will turn red, or else it will be white
-    if (mouseX >= 275 && mouseX <= 375 && mouseY >= 450 && mouseY <= 500) {
-        renderDeclineExitBtn(renderer, font, colorRED, "NO", 450);
+    if (mouseX >= 275 && mouseX <= 375 && mouseY >= 360 && mouseY <= 410) {
+        renderDeclineExitBtn(renderer, font, colorRED, "NO", 360);
         if (event.type == SDL_MOUSEBUTTONDOWN) {
             *confirmExit = false;
         }
     } else {
-        renderDeclineExitBtn(renderer, font, colorWHITE, "NO", 450);
+        renderDeclineExitBtn(renderer, font, colorWHITE, "NO", 360);
     }
 }
 

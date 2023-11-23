@@ -65,8 +65,6 @@ int main(int argc, char ** argv) {
     // Text Related
 	TTF_Font *font = TTF_OpenFont("VISITOR.ttf", 25);
 	SDL_Color colorRED = {255, 0, 0};
-    SDL_Color colorGREEN = {0, 255, 0};
-    SDL_Color colorBLUE = {0, 0, 255};
     SDL_Color colorWHITE = {255, 255, 255};
 
     // Audio Related
@@ -79,7 +77,7 @@ int main(int argc, char ** argv) {
     Mix_VolumeChunk(explosionSFX, MIX_MAX_VOLUME / 15); // Set volume to 10%
 
     // Window and Renderer
-    SDL_Window * window = SDL_CreateWindow("Space Shooter v0.6", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    SDL_Window * window = SDL_CreateWindow("Space Shooter v1.0", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Surface *icon = IMG_Load("media/PLayerShipSprite.png");
     SDL_SetWindowIcon(window, icon);
@@ -107,37 +105,32 @@ int main(int argc, char ** argv) {
     bool ScoreboardTIME = true;
     bool ScoreboardTOP = false;
     bool confirmExit = false;
-    bool escapePressed = false;
     bool gameStart = false;
-    bool pauseGame = false;
     bool ingameMusic = false;
     bool gameOver = false;
-    int mouseX, mouseY;
-    float playerX = 275;
-    float playerY = 600;
+    int mouseX, mouseY;  // Mouse coordinates
+    float playerX = 275; // Player ship starting position
+    float playerY = 600; // Player ship starting position
 
     bool left = false;
     bool right = false;
     bool up = false;
     bool down = false;
 
-    bool collision = false;
-
     int lastProjectileTime = 0;  // Time of last projectile fired
-    bool fireProjectile = false;
+    
+    float speed = 0.1;  // Adjust speed as needed
+    int frameTime = 5;  // Adjust frame time as needed
 
-    float speed = 0.1;
-    int frameTime = 5;
+    int enemyShipDestroyed = 0; // Counter for enemy ships destroyed
+    int playerLives = 3; // Player ship lives
+    int baseLives = 10; // Base lives
 
-    int enemyShipDestroyed = 0;
-    int playerLives = 3;
-    int baseLives = 10;
+    int time = 0; // Time elapsed
+    Uint32 startTime = 0; // Start time
 
-    int time = 0;
-    Uint32 startTime = 0;
-
-    int currentPage = 1;
-    int lineNumber;
+    int currentPage = 1;  // Current page of scoreboard
+    int lineNumber;  // Total number of lines in file
 
 
     // Initialize enemy ships
@@ -157,12 +150,12 @@ int main(int argc, char ** argv) {
     {
         int frameStartTime = SDL_GetTicks();
         float adjustedSpeed = speed * (frameTime / TICK_INTERVAL);
-
+ 
         // Event Polls
         if(SDL_PollEvent(&event) > 0){
             switch (event.type){
                 case SDL_QUIT:
-                    quit = true;
+                    quit = true; 
                     break;
 
                 case SDL_KEYDOWN:
@@ -172,9 +165,6 @@ int main(int argc, char ** argv) {
                     }
                     if (event.key.keysym.sym == SDLK_SPACE && showDisclaimer) {
                         showDisclaimer = false;
-                    }
-                    if (event.key.keysym.sym == SDLK_ESCAPE && gameStart) {
-                        pauseGame = true;
                     }
                     break;
 
@@ -232,7 +222,7 @@ int main(int argc, char ** argv) {
         // Render Main Menu Screen
         if (!showDisclaimer && displayingMENU) {
             renderMenu(renderer, font, colorWHITE, colorRED, mouseX, mouseY, event, &gameStart, &displayingMENU, &displayingSCOREBOARD);
-            startTime = SDL_GetTicks();
+
         }
 
         // Render Exit confirmation screen
@@ -390,6 +380,7 @@ int main(int argc, char ** argv) {
         // Render Game Over screen
         if (gameOver) {
             // Stop ingame bgm
+            ingameMusic = false;
             Mix_HaltMusic();
 
             // Render Game Over screen
