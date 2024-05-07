@@ -62,7 +62,7 @@ int compareScores(const void* a, const void* b) {
 }
 
 // display full scoreboard gui (top score filter)
-void renderTopScoreboard(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, int currentPage) {
+void renderTopScoreboard(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, int currentPage, int totalPages) {
     FILE* file = fopen("game_statistics.txt", "r");
     if (file == NULL) {  // Check if file exists
         printf("Error opening file!\n");
@@ -106,7 +106,7 @@ void renderTopScoreboard(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color
 }
 
 // display full scoreboard gui (time filter)
-void renderTimeScoreboard(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, int currentPage) {
+void renderTimeScoreboard(SDL_Renderer* renderer, TTF_Font* font, SDL_Color colorWHITE, int currentPage, int totalPages) {
     FILE* file = fopen("game_statistics.txt", "r");
     if (file == NULL) {  // Check if file exists
         printf("Error opening file!\n");

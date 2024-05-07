@@ -233,11 +233,12 @@ int main(int argc, char ** argv) {
         // Render Scoreboard screen
         if (displayingSCOREBOARD) {
             int totalLines = checkNumberOfLines();
+            int totalPages = totalLines / 10;
 
             if (ScoreboardTOP) {
-                renderTopScoreboard(renderer, font, colorWHITE, currentPage);
+                renderTopScoreboard(renderer, font, colorWHITE, currentPage, totalPages);
             } else if (ScoreboardTIME) {
-                renderTimeScoreboard(renderer, font, colorWHITE, currentPage);
+                renderTimeScoreboard(renderer, font, colorWHITE, currentPage, totalPages);
             }
             
             // Handle Button Clicks

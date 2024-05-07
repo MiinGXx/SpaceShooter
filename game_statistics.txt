@@ -6,4 +6,3 @@
 6. Time Survived: 169 Sec, Enemy Ships Destroyed: 194, Score: 25315
 7. Time Survived: 17 Sec, Enemy Ships Destroyed: 17, Score: 2295
 8. Time Survived: 35 Sec, Enemy Ships Destroyed: 40, Score: 5225
-9. Time Survived: 21 Sec, Enemy Ships Destroyed: 17, Score: 2435
